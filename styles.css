@@ -1,0 +1,340 @@
+    p {
+    	font-family:'Ubuntu Condensed', Calibri, Candara, Optima, Arial, sans-serif;
+    	margin:0;
+    	color:#4A5C5F;
+    }
+    
+    a {
+    	text-decoration:none;
+    	color:#FF9999;
+    }
+    
+    h2 {
+    	color:#F2E0FC;
+    	font-family:'Philosopher', Calibri, Candara, Optima, Arial, sans-serif;
+    	font-weight:200;
+    	text-shadow: .7px .7px #042C84;
+    }
+    
+    h3 {
+        color:#F2E0FC;
+        font-family:'Philosopher', Calibri, Candara, Optima, Arial, sans-serif;
+        font-weight:200;
+        text-shadow: .7px .7px #042C84;
+        text-align: center;
+    }
+
+    h4 {
+        color:#AF9BBA;
+        font-family:'Philosopher', Calibri, Candara, Optima, Arial, sans-serif;
+        font-weight:200;
+        text-shadow: .7px .7px #042C84;
+        text-align: center;
+    }
+    
+    .btn {
+		font-family:'Philosopher', Calibri, Candara, Optima, Arial, sans-serif;
+    }
+    
+    .alert-success {
+    	background-image:url("images/success.png");
+    	background-size: 490px 240px;
+    	border:0 solid grey;
+    	box-shadow: 3px 3px 2px #888888;
+    	text-shadow: .5px .5px #D8DADA;
+    }
+    
+    .alert-danger {
+    	background-image:url("images/error.png");
+    	background-size: 490px 160px;
+    	border:0 solid grey;
+    	box-shadow: 3px 3px 2px #888888;
+    	color:#E7EBEB;
+    }
+    
+    #success {
+        margin-top:30px;
+        
+    }
+    
+    #error {
+        margin-top:30px;
+    }
+    
+    form {
+		font-family:'Ubuntu Condensed', Calibri, Candara, Optima, Arial, sans-serif;
+		color:#DBD9DC;
+		text-shadow:1px 1px #49424A;
+    }
+
+    label {
+        color: #C6B0D2;
+    }
+    
+    table {
+      font-family: 'Ubuntu Condensed', optima;
+      border-collapse: collapse;
+      background-color: #E0E1E9;
+      box-shadow: 3px 3px 2px #888888;
+    }
+    
+    thead, th {
+      font-size: 0.95em;
+      text-align: center;
+      border: .5px solid #999;
+      padding: 0.15rem;
+    }
+
+    td {
+      font-size: 0.85em;
+      border: .5px solid #999;
+      padding: 0.15rem;
+    }
+    
+    input {
+		font-size:.9em;
+    }
+    
+     textarea {
+		font-size:.9em;
+    }
+    
+    #topContainer {
+   		width:100%;
+   		height:100%;
+		background-image:url("images/loginBg3.jpg");
+    }
+    
+    #topContainer2 {
+    	width: 100%;
+    	height: 1550px;
+		background-image:url("images/transpBg3.jpg");
+		background-position:center;
+		padding:50px 0 200px 0;
+    }
+    
+    #invisDiv {
+      background-color: transparent;
+      margin: 0 auto;
+      width: 1134px;
+    }
+
+    #invisDiv2 {
+      background-color: transparent;
+      margin: 0 auto;
+      width: 780px;
+      padding-top: 20px;
+    }
+    
+    #daySched {
+    	float: left;
+    	width: 350px;
+    	height: 958px;
+    }
+
+    #emailList {
+        background-color: #E0E1E9;
+        margin: 60px 0 0 35px;
+        padding: 10px;
+        width: 370px;
+        border-radius: 5px;
+        box-shadow: 2px 2px 8px rgba(1, 1, 1, 0.8);
+        float: left;
+        font-family:'Ubuntu Condensed', Calibri, Candara, Optima, Arial, sans-serif;
+    }
+
+    #emailVersenden {
+        background-color: #E0E1E9;
+        margin: 60px 0 0 35px;
+        padding: 10px;
+        width: 340px;
+        border-radius: 5px;
+        box-shadow: 2px 2px 8px rgba(1, 1, 1, 0.8);
+        float: left;
+        font-family:'Ubuntu Condensed', Calibri, Candara, Optima, Arial, sans-serif;
+    }
+    
+     #componentPalette {
+   		width:180px;
+   		height:370px;
+		background-image:url("images/loginBg3.jpg");
+		padding-top:25px;
+		background-size:290px 371px;
+		border-radius:5px;
+		box-shadow: 2px 2px 8px rgba(1, 1, 1, 0.8);
+		margin: 0 auto;
+    }
+    
+    .comBtns {
+    	width:120px;
+    	margin:0 0 26px 32px;
+    	font-size:1.1em;
+    	font-weight:600;
+    	text-align:center;
+    }
+    
+    .btn-success {
+        background: -webkit-gradient(linear, left top, left bottom, from(#D20202), to(#9C0000));
+        background: -webkit-linear-gradient(top, #D20202, #9C0000);
+        background: -moz-linear-gradient(top, #D20202, #9C0000);
+        background: -ms-linear-gradient(top, #D20202, #9C0000);
+        background: -o-linear-gradient(top, #D20202, #9C0000);
+        border:0;
+        color:#DBD9DC;
+    }
+    
+    .btn-success:hover {
+		color:#F2E0FC;
+		border:0;
+		opacity:0.7;
+    }
+    
+    .btn-primary {
+        background: -webkit-gradient(linear, left top, left bottom, from(#15BF17), to(#013C02));
+        background: -webkit-linear-gradient(top, #15BF17, #013C02);
+        background: -moz-linear-gradient(top, #15BF17, #013C02);
+        background: -ms-linear-gradient(top, #15BF17, #013C02);
+        background: -o-linear-gradient(top, #15BF17, #013C02);
+        border:0;
+        color:#DBD9DC;
+    }
+    
+    .btn-primary:hover {
+		color:#F2E0FC;
+		border:0;
+		opacity:0.7;
+    }
+    
+    .btn-secondary {
+        background: -webkit-gradient(linear, left top, left bottom, from(#058BCE), to(#011030));
+        background: -webkit-linear-gradient(top, #058BCE, #011030);
+        background: -moz-linear-gradient(top, #058BCE, #011030);
+        background: -ms-linear-gradient(top, #058BCE, #011030);
+        background: -o-linear-gradient(top, #058BCE, #011030);
+        border:0;
+        color:#DBD9DC;
+    }
+    
+    .btn-secondary:hover {
+		color:#FCF6FF;
+		opacity:0.7;
+    }
+    
+    #einloggen {
+		margin-top:50px;
+		padding-bottom:518px; 
+    }
+
+    #PatID {
+        border:.5px double #5E5E5E;
+        background-color:#EBEBEB;
+        width:52px;
+        height:24px;
+        font-size:.9em;
+        padding:2px;
+        margin:0px;
+    }
+    
+    #pNformTop {
+    	width: 202mm;
+    	height: 950px;
+        padding:8px;
+        color:#041946;
+        font-weight:200;
+		text-shadow:none;
+		float: left;
+    }
+    
+    #NewPatient {
+    	width:202mm;
+    	height:120mm;
+    	margin-left: auto;
+        margin-right: auto;
+        padding:8px;
+        color:#041946;
+        font-weight:200;
+		text-shadow:none;
+    }
+    
+    #pastVisits {
+        width: 676px;
+        color: #041946;
+        font-weight: 200;
+        font-size:0.85em;
+		text-shadow: none;
+        background-color: #E0E1E9;
+        padding: 8px;
+        margin: 0 0 150px 12px;
+        border-radius: 5px;
+        box-shadow: 2px 2px 8px rgba(1, 1, 1, 0.8);
+    }
+    
+    #mainDetails1 {
+    	width:135mm;
+    	height:47mm;
+    	float: left;
+    	margin-right: 0;
+    }
+    
+    #mainDetails2 {
+    	width:60mm;
+    	height:47mm;
+    	float: right;
+    	margin-left: 0;
+    }
+    
+    #fixedNotes {
+    	width: 747px;
+    	height: 158px;
+    	margin-right: 0;
+    	margin-top: 195px;
+    }
+    
+    #dynNotes {
+    	width: 747px;
+    }
+    
+    .Nichts {
+        background-color: #E0E1E9;
+        border: 2px solid #E0E1E9;
+    }
+
+    .Neupatient {
+        background-color: #23C2C7;
+        border: 2px solid #23C2C7;
+    }
+    
+    .NeupatientTBC {
+        background-color: #23C2C7;
+        border: 2px dashed #848484;
+    }
+    
+    .Patient {
+        background-color: #50D9F2;
+        border: 2px solid #50D9F2;
+    }
+    
+    .PatientTBC {
+        background-color: #50D9F2;
+        border: 2px dashed #848484;
+    }
+    
+    .Pause {
+        background-color: #FCF9B1;
+        border: 2px solid #FCF9B1;
+    }
+    
+    .Puffer {
+        background-color: #3F3E3E;
+        border: 2px solid #3F3E3E;
+    }
+    
+    .ChiroYogaEvent {
+        background-color: #B8FAB4;
+        border: 2px solid #B8FAB4;
+    }
+    
+    .PersonalEvent {
+        background-color: #F5C3FC;
+        border: 2px solid #F5C3FC;
+    }
