@@ -29,7 +29,7 @@
 
 	if ($_POST['submit1']) {
 	
-		if (!$_POST['Nachname']) $error="<br />Bitte geben Sie einen Nachnamen ein.";
+		if (!$_POST['Nachname']) $error="<br />Bitte bitte geben Sie einen Nachnamen ein.";
 		
 		if (!$_POST['Vorname']) $error.="<br />Bitte geben Sie einen Vornamen ein.";
 		
