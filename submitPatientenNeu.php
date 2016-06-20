@@ -3,6 +3,7 @@
 	session_start();
 
 	require_once("connection.php");
+	require_once("functions.php");
 	
 	if (!$_SESSION['id']) {
 	
@@ -39,7 +40,7 @@
 			$error = '<strong>Es gab Problem(e) beim Eingeben:</strong>' . $error . '<br>Nachname, Vorname und Geburtstag sind erforderlich. Bitte korrigieren.';
 
 		} elseif (empty($_POST['PatID'])) {
-			//New patient?
+			//New patient ... ?
 
 			$query = "SELECT * FROM `Patienten` WHERE `Nachname` = '" . $_POST['Nachname'] . "' AND `Vorname` = '" . $_POST['Vorname'] . "' AND `Geburtstag` = '" . $_POST['Geburtstag'] . "'";
 
@@ -53,7 +54,7 @@
 
 				$error = '<br>Einen Patient mit dem Nachname, Vorname und Geburtstag gibt es schon. Wenn die Daten stimmen, bitte einen zweiten Vorname im Vornamenfeld hinzufügen, damit der Patient als Neupatient hinzugefügt werden kann.';
 
-			} else { //New patient, add data...
+			} else { //... Yes, new patient: add data...
 
 				$query = "INSERT INTO `Patienten` (`Nachname`,`Vorname`,`Anrede`,`Email`,`Tel`,`Handy`,`AnmDatum`,`Geburtstag`,`Anschrift`,`Bemerkung`,`Taetigkeit`) 
 				VALUES 
@@ -103,94 +104,17 @@
 
 				} else {
 
+					//This code could be a function that takes PATID as a variable
+
 					$PATID = $row[13];
 
 					//Existing patient, so gather and format past visit data from PatBesuch table...
+					$pastVisits1 = generate_pastVisit_data($PATID);
 
-					$query = "SELECT * FROM `PatBesuch` WHERE `PatID` = " . $PATID . " ORDER BY `BesDatum` DESC";
-				
-					$result1 = mysqli_query($link, $query);
-	
-					if (!$result1) $error = die($link->error);
-
-					$rows = $result1->num_rows;
-					//calculate number of headings for concertina...
-					if ($rows < 4 && $rows > 0) {
-					$nu_headings = 1;
-					} else {
-						$remainder = $rows % 4;
-						if ($remainder > 0) {
-							$nu_headings = floor(1 + $rows / 4);
-						} else {
-							$nu_headings = $rows / 4;
-						}
-					}
-
-					//Build arrays of visit data
-					while( $r = $result1->fetch_array(MYSQLI_ASSOC) ) {
-						$datesUnformatted[] = $r['BesDatum'];
-						$anamnesen[] = $r['Anamnese'];
-						$behandlungen[] = $r['Behandlung'];
-					}
-
-					$count = count($datesUnformatted) -1;
-
-					for ($i = 0 ; $i <= $count ; ++$i) {
-						$yearPost = substr($datesUnformatted[$i], 0, -6);
-			   			$monthPost = substr($datesUnformatted[$i], 5, -3);
-			   			$dayPost = substr($datesUnformatted[$i], 8);
-			   			$dates[] = $dayPost . '.' . $monthPost . '.' . $yearPost;
-					}
-
-					//Add content from recorded data to created headings...
-					if ($rows == 1) {
-						$heading = '<h4>Besuch am ' . $dates[0] . '</h4><p>';
-						$pastVisits1 = $heading;
-						$pastVisits1 .= '<strong>' . $dates[0] . '</strong><br><em>Anamnese: </em>' . $anamnesen[0] . '<br><br><em>Behandlung: </em>' . $behandlungen[0] . '</p>';
-					} else if ($rows > 1 && $rows < 4) {
-						$last = reset($dates);
-						$first = end($dates);
-						$heading = '<h4>Besuche vom ' . $last . ' bis ' . $first . '</h4><p>';
-						$pastVisits1 = $heading;
-						for ($j = 0 ; $j < $rows ; ++$j) {
-							$pastVisits1 .= '<strong>' . $dates[$j] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$j] . '<br><br><em>Behandlung: </em>' . $behandlungen[$j] . '<br><br>';
-						}
-						$pastVisits1 .= '</p>';
-					} else {
-						$lastLoop = count($dates) -1;
-						for ($i = 0 ; $i < $nu_headings ; ++$i) {
-							//Build array of headings for concertina
-							if ($i == $nu_headings - 1) {
-								if ($remainder == 1) {
-									$headings[] = '<h4>Besuch am ' . $dates[$lastLoop] . '</h4><p>';
-									$pastVisits1 .= $headings[$i];
-									$pastVisits1 .= '<strong>' . $dates[$lastLoop] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$lastLoop] . '<br><br><em>Behandlung: </em>' . $behandlungen[$lastLoop] . '</p>';
-								} else {
-									$newest = $i + (3 * $i);
-									$headings[] = '<h4>Besuche vom ' . $dates[$newest] . ' bis ' . $dates[$lastLoop] . '</h4><p>';
-									$pastVisits1 .= $headings[$i];
-
-									for ($j = $newest ; $j <= $lastLoop ; ++$j) {
-										$pastVisits1 .= '<strong>' . $dates[$j] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$j] . '<br><br><em>Behandlung: </em>' . $behandlungen[$j] . '<br><br>';
-									}
-									$pastVisits1 .= '</p>';
-								}
-							} else {
-								$newest = $i + (3 * $i);
-								$oldest = $newest + 3;
-								$headings[] = '<h4>Besuche vom ' . $dates[$newest] . ' bis ' . $dates[$oldest] . '</h4><p>';
-								$pastVisits1 .= $headings[$i];
-
-								for ($j = $newest ; $j < $newest + 4 ; ++$j) {
-									$pastVisits1 .= '<strong>' . $dates[$j] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$j] . '<br><br><em>Behandlung: </em>' . $behandlungen[$j] . '<br><br>';
-								}
-								$pastVisits1 .= '</p>';
-							}
-						}
-							
-					}
 
 					//Make any needed changes and give detailed information on each change in case an error was made...
+
+					//This section should be a for i in loop such that we have $row[$i] for each iteration...
 					if ($row[0] != $_POST['Nachname']) {
 		
 						$Nachname = $row[0];
@@ -400,88 +324,7 @@
 			$success.='Patientenzustand zu Patient ' . $_POST['Nachname'] . ', ' . $_POST['Vorname'] . ', ' . $_POST['Geburtstag'] . ' erfolgreich eingegeben/updated.';
 
 			//Existing patient, so gather and format past visit data from PatBesuch table...
-			$query = "SELECT * FROM `PatBesuch` WHERE `PatID` = " . $PATID . " ORDER BY `BesDatum` DESC";
-		
-			$result1 = mysqli_query($link, $query);
-	
-			if (!$result1) $error = die($link->error);
-
-			$rows = $result1->num_rows;
-			//calculate number of headings for concertina...
-			if ($rows < 4 && $rows > 0) {
-			$nu_headings = 1;
-			} else {
-				$remainder = $rows % 4;
-				if ($remainder > 0) {
-					$nu_headings = floor(1 + $rows / 4);
-				} else {
-					$nu_headings = $rows / 4;
-				}
-			}
-
-			//Build arrays of visit data
-			while( $r = $result1->fetch_array(MYSQLI_ASSOC) ) {
-				$datesUnformatted[] = $r['BesDatum'];
-				$anamnesen[] = $r['Anamnese'];
-				$behandlungen[] = $r['Behandlung'];
-			}
-
-			$count = count($datesUnformatted) -1;
-
-			for ($i = 0 ; $i <= $count ; ++$i) {
-				$yearPost = substr($datesUnformatted[$i], 0, -6);
-	   			$monthPost = substr($datesUnformatted[$i], 5, -3);
-	   			$dayPost = substr($datesUnformatted[$i], 8);
-	   			$dates[] = $dayPost . '.' . $monthPost . '.' . $yearPost;
-			}
-
-			//Add content from recorded data to created headings...
-			if ($rows == 1) {
-				$heading = '<h4>Besuch am ' . $dates[0] . '</h4><p>';
-				$pastVisits1 = $heading;
-				$pastVisits1 .= '<strong>' . $dates[0] . '</strong><br><em>Anamnese: </em>' . $anamnesen[0] . '<br><br><em>Behandlung: </em>' . $behandlungen[0] . '</p>';
-			} else if ($rows > 1 && $rows < 4) {
-				$last = reset($dates);
-				$first = end($dates);
-				$heading = '<h4>Besuche vom ' . $last . ' bis ' . $first . '</h4><p>';
-				$pastVisits1 = $heading;
-				for ($j = 0 ; $j < $rows ; ++$j) {
-					$pastVisits1 .= '<strong>' . $dates[$j] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$j] . '<br><br><em>Behandlung: </em>' . $behandlungen[$j] . '<br><br>';
-				}
-				$pastVisits1 .= '</p>';
-			} else {
-				$lastLoop = count($dates) -1;
-				for ($i = 0 ; $i < $nu_headings ; ++$i) {
-					//Build array of headings for concertina
-					if ($i == $nu_headings - 1) {
-						if ($remainder == 1) {
-							$headings[] = '<h4>Besuch am ' . $dates[$lastLoop] . '</h4><p>';
-							$pastVisits1 .= $headings[$i];
-							$pastVisits1 .= '<strong>' . $dates[$lastLoop] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$lastLoop] . '<br><br><em>Behandlung: </em>' . $behandlungen[$lastLoop] . '</p>';
-						} else {
-							$newest = $i + (3 * $i);
-							$headings[] = '<h4>Besuche vom ' . $dates[$newest] . ' bis ' . $dates[$lastLoop] . '</h4><p>';
-							$pastVisits1 .= $headings[$i];
-
-							for ($j = $newest ; $j <= $lastLoop ; ++$j) {
-								$pastVisits1 .= '<strong>' . $dates[$j] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$j] . '<br><br><em>Behandlung: </em>' . $behandlungen[$j] . '<br><br>';
-							}
-							$pastVisits1 .= '</p>';
-						}
-					} else {
-						$newest = $i + (3 * $i);
-						$oldest = $newest + 3;
-						$headings[] = '<h4>Besuche vom ' . $dates[$newest] . ' bis ' . $dates[$oldest] . '</h4><p>';
-						$pastVisits1 .= $headings[$i];
-
-						for ($j = $newest ; $j < $newest + 4 ; ++$j) {
-							$pastVisits1 .= '<strong>' . $dates[$j] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$j] . '<br><br><em>Behandlung: </em>' . $behandlungen[$j] . '<br><br>';
-						}
-						$pastVisits1 .= '</p>';
-					}
-				}
-					
-			}
+			$pastVisits1 = generate_pastVisit_data($PATID);
 
 		}
 
@@ -509,88 +352,7 @@
 				$error.="<br>Das Anamnesefeld beinhaltet keine Daten, Daten gibt es aber im Behandlungsfeld. Ihre alten Anamnesedaten werden von der Datenbank importiert, damit Sie die komplette Besuchsdaten richtig abspeichern können. Wenn Sie mit Ihren Daten nun zufrieden sind, bitte nochmal abspeichern.";
 
 				//Existing patient, so gather and format past visit data from PatBesuch table...
-				$query = "SELECT * FROM `PatBesuch` WHERE `PatID` = " . $PATID . " ORDER BY `BesDatum` DESC";
-			
-				$result1 = mysqli_query($link, $query);
-	
-				if (!$result1) $error = die($link->error);
-
-				$rows = $result1->num_rows;
-				//calculate number of headings for concertina...
-				if ($rows < 4 && $rows > 0) {
-				$nu_headings = 1;
-				} else {
-					$remainder = $rows % 4;
-					if ($remainder > 0) {
-						$nu_headings = floor(1 + $rows / 4);
-					} else {
-						$nu_headings = $rows / 4;
-					}
-				}
-
-				//Build arrays of visit data
-				while( $r = $result1->fetch_array(MYSQLI_ASSOC) ) {
-					$datesUnformatted[] = $r['BesDatum'];
-					$anamnesen[] = $r['Anamnese'];
-					$behandlungen[] = $r['Behandlung'];
-				}
-
-				$count = count($datesUnformatted) -1;
-
-				for ($i = 0 ; $i <= $count ; ++$i) {
-					$yearPost = substr($datesUnformatted[$i], 0, -6);
-		   			$monthPost = substr($datesUnformatted[$i], 5, -3);
-		   			$dayPost = substr($datesUnformatted[$i], 8);
-		   			$dates[] = $dayPost . '.' . $monthPost . '.' . $yearPost;
-				}
-
-				//Add content from recorded data to created headings...
-				if ($rows == 1) {
-					$heading = '<h4>Besuch am ' . $dates[0] . '</h4><p>';
-					$pastVisits1 = $heading;
-					$pastVisits1 .= '<strong>' . $dates[0] . '</strong><br><em>Anamnese: </em>' . $anamnesen[0] . '<br><br><em>Behandlung: </em>' . $behandlungen[0] . '</p>';
-				} else if ($rows > 1 && $rows < 4) {
-					$last = reset($dates);
-					$first = end($dates);
-					$heading = '<h4>Besuche vom ' . $last . ' bis ' . $first . '</h4><p>';
-					$pastVisits1 = $heading;
-					for ($j = 0 ; $j < $rows ; ++$j) {
-						$pastVisits1 .= '<strong>' . $dates[$j] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$j] . '<br><br><em>Behandlung: </em>' . $behandlungen[$j] . '<br><br>';
-					}
-					$pastVisits1 .= '</p>';
-				} else {
-					$lastLoop = count($dates) -1;
-					for ($i = 0 ; $i < $nu_headings ; ++$i) {
-						//Build array of headings for concertina
-						if ($i == $nu_headings - 1) {
-							if ($remainder == 1) {
-								$headings[] = '<h4>Besuch am ' . $dates[$lastLoop] . '</h4><p>';
-								$pastVisits1 .= $headings[$i];
-								$pastVisits1 .= '<strong>' . $dates[$lastLoop] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$lastLoop] . '<br><br><em>Behandlung: </em>' . $behandlungen[$lastLoop] . '</p>';
-							} else {
-								$newest = $i + (3 * $i);
-								$headings[] = '<h4>Besuche vom ' . $dates[$newest] . ' bis ' . $dates[$lastLoop] . '</h4><p>';
-								$pastVisits1 .= $headings[$i];
-
-								for ($j = $newest ; $j <= $lastLoop ; ++$j) {
-									$pastVisits1 .= '<strong>' . $dates[$j] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$j] . '<br><br><em>Behandlung: </em>' . $behandlungen[$j] . '<br><br>';
-								}
-								$pastVisits1 .= '</p>';
-							}
-						} else {
-							$newest = $i + (3 * $i);
-							$oldest = $newest + 3;
-							$headings[] = '<h4>Besuche vom ' . $dates[$newest] . ' bis ' . $dates[$oldest] . '</h4><p>';
-							$pastVisits1 .= $headings[$i];
-
-							for ($j = $newest ; $j < $newest + 4 ; ++$j) {
-								$pastVisits1 .= '<strong>' . $dates[$j] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$j] . '<br><br><em>Behandlung: </em>' . $behandlungen[$j] . '<br><br>';
-							}
-							$pastVisits1 .= '</p>';
-						}
-					}
-						
-				}
+				$pastVisits1 = generate_pastVisit_data($PATID);
 
 			} else {
 				$error .= "Anamnese darf nicht leer sein, wenn das Behandlungsfeld Daten beinhaltet. Bitte Text zur Anamnese hinzufügen (z.B.: <em>Keine</em>).";
@@ -628,88 +390,7 @@
 				$success.='Patientenbesuchsdaten zu Patient ' . $_POST['Nachname'] . ', ' . $_POST['Vorname'] . ', ' . $_POST['Geburtstag'] . ' erfolgreich geändert/updated zum existierenden Besuchsdatum ' . $_POST['BesDatum'] . '.';
 
 				//Existing patient, so gather and format past visit data from PatBesuch table...
-				$query = "SELECT * FROM `PatBesuch` WHERE `PatID` = " . $PATID . " ORDER BY `BesDatum` DESC";
-			
-				$result1 = mysqli_query($link, $query);
-	
-				if (!$result1) $error = die($link->error);
-
-				$rows = $result1->num_rows;
-				//calculate number of headings for concertina...
-				if ($rows < 4 && $rows > 0) {
-				$nu_headings = 1;
-				} else {
-					$remainder = $rows % 4;
-					if ($remainder > 0) {
-						$nu_headings = floor(1 + $rows / 4);
-					} else {
-						$nu_headings = $rows / 4;
-					}
-				}
-
-				//Build arrays of visit data
-				while( $r = $result1->fetch_array(MYSQLI_ASSOC) ) {
-					$datesUnformatted[] = $r['BesDatum'];
-					$anamnesen[] = $r['Anamnese'];
-					$behandlungen[] = $r['Behandlung'];
-				}
-
-				$count = count($datesUnformatted) -1;
-
-				for ($i = 0 ; $i <= $count ; ++$i) {
-					$yearPost = substr($datesUnformatted[$i], 0, -6);
-		   			$monthPost = substr($datesUnformatted[$i], 5, -3);
-		   			$dayPost = substr($datesUnformatted[$i], 8);
-		   			$dates[] = $dayPost . '.' . $monthPost . '.' . $yearPost;
-				}
-
-				//Add content from recorded data to created headings...
-				if ($rows == 1) {
-					$heading = '<h4>Besuch am ' . $dates[0] . '</h4><p>';
-					$pastVisits1 = $heading;
-					$pastVisits1 .= '<strong>' . $dates[0] . '</strong><br><em>Anamnese: </em>' . $anamnesen[0] . '<br><br><em>Behandlung: </em>' . $behandlungen[0] . '</p>';
-				} else if ($rows > 1 && $rows < 4) {
-					$last = reset($dates);
-					$first = end($dates);
-					$heading = '<h4>Besuche vom ' . $last . ' bis ' . $first . '</h4><p>';
-					$pastVisits1 = $heading;
-					for ($j = 0 ; $j < $rows ; ++$j) {
-						$pastVisits1 .= '<strong>' . $dates[$j] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$j] . '<br><br><em>Behandlung: </em>' . $behandlungen[$j] . '<br><br>';
-					}
-					$pastVisits1 .= '</p>';
-				} else {
-					$lastLoop = count($dates) -1;
-					for ($i = 0 ; $i < $nu_headings ; ++$i) {
-						//Build array of headings for concertina
-						if ($i == $nu_headings - 1) {
-							if ($remainder == 1) {
-								$headings[] = '<h4>Besuch am ' . $dates[$lastLoop] . '</h4><p>';
-								$pastVisits1 .= $headings[$i];
-								$pastVisits1 .= '<strong>' . $dates[$lastLoop] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$lastLoop] . '<br><br><em>Behandlung: </em>' . $behandlungen[$lastLoop] . '</p>';
-							} else {
-								$newest = $i + (3 * $i);
-								$headings[] = '<h4>Besuche vom ' . $dates[$newest] . ' bis ' . $dates[$lastLoop] . '</h4><p>';
-								$pastVisits1 .= $headings[$i];
-
-								for ($j = $newest ; $j <= $lastLoop ; ++$j) {
-									$pastVisits1 .= '<strong>' . $dates[$j] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$j] . '<br><br><em>Behandlung: </em>' . $behandlungen[$j] . '<br><br>';
-								}
-								$pastVisits1 .= '</p>';
-							}
-						} else {
-							$newest = $i + (3 * $i);
-							$oldest = $newest + 3;
-							$headings[] = '<h4>Besuche vom ' . $dates[$newest] . ' bis ' . $dates[$oldest] . '</h4><p>';
-							$pastVisits1 .= $headings[$i];
-
-							for ($j = $newest ; $j < $newest + 4 ; ++$j) {
-								$pastVisits1 .= '<strong>' . $dates[$j] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$j] . '<br><br><em>Behandlung: </em>' . $behandlungen[$j] . '<br><br>';
-							}
-							$pastVisits1 .= '</p>';
-						}
-					}
-						
-				}
+				$pastVisits1 = generate_pastVisit_data($PATID);
 
 			} else {
 				//New entry for this patient...
@@ -727,88 +408,7 @@
 				$success.='Patientenbesuchsdaten zu ' . $_POST['Nachname'] . ', ' . $_POST['Vorname'] . ', ' . $_POST['Geburtstag'] . ' erfolgreich eingegeben zum neuen Besuchsdatum ' . $_POST['BesDatum'] . '.';
 
 				//Now gather and format new visit data from PatBesuch table...
-				$query = "SELECT * FROM `PatBesuch` WHERE `PatID` = " . $PATID . " ORDER BY `BesDatum` DESC";
-			
-				$result1 = mysqli_query($link, $query);
-	
-				if (!$result1) $error = die($link->error);
-
-				$rows = $result1->num_rows;
-				//calculate number of headings for concertina...
-				if ($rows < 4 && $rows > 0) {
-				$nu_headings = 1;
-				} else {
-					$remainder = $rows % 4;
-					if ($remainder > 0) {
-						$nu_headings = floor(1 + $rows / 4);
-					} else {
-						$nu_headings = $rows / 4;
-					}
-				}
-
-				//Build arrays of visit data
-				while( $r = $result1->fetch_array(MYSQLI_ASSOC) ) {
-					$datesUnformatted[] = $r['BesDatum'];
-					$anamnesen[] = $r['Anamnese'];
-					$behandlungen[] = $r['Behandlung'];
-				}
-
-				$count = count($datesUnformatted) -1;
-
-				for ($i = 0 ; $i <= $count ; ++$i) {
-					$yearPost = substr($datesUnformatted[$i], 0, -6);
-		   			$monthPost = substr($datesUnformatted[$i], 5, -3);
-		   			$dayPost = substr($datesUnformatted[$i], 8);
-		   			$dates[] = $dayPost . '.' . $monthPost . '.' . $yearPost;
-				}
-
-				//Add content from recorded data to created headings...
-				if ($rows == 1) {
-					$heading = '<h4>Besuch am ' . $dates[0] . '</h4><p>';
-					$pastVisits1 = $heading;
-					$pastVisits1 .= '<strong>' . $dates[0] . '</strong><br><em>Anamnese: </em>' . $anamnesen[0] . '<br><br><em>Behandlung: </em>' . $behandlungen[0] . '</p>';
-				} else if ($rows > 1 && $rows < 4) {
-					$last = reset($dates);
-					$first = end($dates);
-					$heading = '<h4>Besuche vom ' . $last . ' bis ' . $first . '</h4><p>';
-					$pastVisits1 = $heading;
-					for ($j = 0 ; $j < $rows ; ++$j) {
-						$pastVisits1 .= '<strong>' . $dates[$j] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$j] . '<br><br><em>Behandlung: </em>' . $behandlungen[$j] . '<br><br>';
-					}
-					$pastVisits1 .= '</p>';
-				} else {
-					$lastLoop = count($dates) -1;
-					for ($i = 0 ; $i < $nu_headings ; ++$i) {
-						//Build array of headings for concertina
-						if ($i == $nu_headings - 1) {
-							if ($remainder == 1) {
-								$headings[] = '<h4>Besuch am ' . $dates[$lastLoop] . '</h4><p>';
-								$pastVisits1 .= $headings[$i];
-								$pastVisits1 .= '<strong>' . $dates[$lastLoop] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$lastLoop] . '<br><br><em>Behandlung: </em>' . $behandlungen[$lastLoop] . '</p>';
-							} else {
-								$newest = $i + (3 * $i);
-								$headings[] = '<h4>Besuche vom ' . $dates[$newest] . ' bis ' . $dates[$lastLoop] . '</h4><p>';
-								$pastVisits1 .= $headings[$i];
-
-								for ($j = $newest ; $j <= $lastLoop ; ++$j) {
-									$pastVisits1 .= '<strong>' . $dates[$j] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$j] . '<br><br><em>Behandlung: </em>' . $behandlungen[$j] . '<br><br>';
-								}
-								$pastVisits1 .= '</p>';
-							}
-						} else {
-							$newest = $i + (3 * $i);
-							$oldest = $newest + 3;
-							$headings[] = '<h4>Besuche vom ' . $dates[$newest] . ' bis ' . $dates[$oldest] . '</h4><p>';
-							$pastVisits1 .= $headings[$i];
-
-							for ($j = $newest ; $j < $newest + 4 ; ++$j) {
-								$pastVisits1 .= '<strong>' . $dates[$j] . '</strong><br><em>Anamnese: </em>' . $anamnesen[$j] . '<br><br><em>Behandlung: </em>' . $behandlungen[$j] . '<br><br>';
-							}
-							$pastVisits1 .= '</p>';
-						}
-					}
-						
-				}
+				$pastVisits1 = generate_pastVisit_data($PATID);
 
 			}
 
