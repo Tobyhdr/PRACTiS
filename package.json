@@ -1,0 +1,29 @@
+{
+  "name": "practis",
+  "version": "1.0.0",
+  "description": "Intuive software for your practice",
+  "main": "index.php",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tobyhdr/PRACTiS.git"
+  },
+  "keywords": [
+    "patientnotes",
+    "scheduler",
+    "invoicing",
+    "stats",
+    "generation"
+  ],
+  "author": "Toby Russell",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Tobyhdr/PRACTiS/issues"
+  },
+  "homepage": "https://github.com/Tobyhdr/PRACTiS#readme",
+  "dependencies": {
+    "express": "^4.13.2"
+  }
+}
